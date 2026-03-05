@@ -36,6 +36,18 @@
     "tencentcloud-lighthouse-skill": {
       "version": "1.0.0",
       "installedAt": 1772179839761
+    },
+    "skill-vetter": {
+      "version": "1.0.0",
+      "installedAt": 1772694096397
+    },
+    "gog": {
+      "version": "1.0.0",
+      "installedAt": 1772694101152
+    },
+    "capability-evolver": {
+      "version": "1.23.0",
+      "installedAt": 1772694138389
     }
   }
 }
