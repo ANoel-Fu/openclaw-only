@@ -1,0 +1,36 @@
+# 敏感配置文件
+openclaw.json
+openclaw.json.*
+
+# 凭证
+credentials/
+
+# 记忆数据库
+memory/*.sqlite
+memory/*.db
+
+# 日志
+logs/
+
+# 媒体缓存
+media/
+
+# 设备信息
+devices/
+
+# 会话数据
+delivery-queue/
+
+# 临时文件
+*.tmp
+*.bak
+*.swp
+*~
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 环境变量
+.env
+.env.local

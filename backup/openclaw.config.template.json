@@ -1,0 +1,144 @@
+{
+  "meta": {
+    "lastTouchedVersion": "2026.2.26",
+    "backupDate": "2026-03-05",
+    "note": "【重要】此文件为模板，密钥字段需要手动填写真实值！"
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "bailian/qwen3.5-plus"
+      },
+      "models": {
+        "bailian/qwen3.5-plus": {},
+        "bailian/qwen3-max-2026-01-23": {},
+        "bailian/qwen3-coder-next": {},
+        "bailian/qwen3-coder-plus": {},
+        "bailian/MiniMax-M2.5": {},
+        "bailian/glm-5": {},
+        "bailian/glm-4.7": {},
+        "bailian/kimi-k2.5": {}
+      },
+      "workspace": "/root/.openclaw/workspace",
+      "compaction": {
+        "mode": "safeguard"
+      },
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8
+      }
+    }
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "bailian": {
+        "baseUrl": "https://coding.dashscope.aliyuncs.com/v1",
+        "apiKey": "YOUR_DASHSCOPE_API_KEY_HERE",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "qwen3.5-plus",
+            "name": "qwen3.5-plus",
+            "reasoning": false,
+            "input": ["text", "image"],
+            "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+            "contextWindow": 1000000,
+            "maxTokens": 65536
+          },
+          {
+            "id": "qwen3-max-2026-01-23",
+            "name": "qwen3-max-2026-01-23",
+            "reasoning": false,
+            "input": ["text"],
+            "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+            "contextWindow": 262144,
+            "maxTokens": 65536
+          },
+          {
+            "id": "glm-5",
+            "name": "glm-5",
+            "reasoning": false,
+            "input": ["text"],
+            "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+            "contextWindow": 202752,
+            "maxTokens": 16384
+          }
+        ]
+      }
+    }
+  },
+  "messages": {
+    "ackReactionScope": "group-mentions"
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto",
+    "restart": true,
+    "ownerDisplay": "raw"
+  },
+  "session": {
+    "dmScope": "per-channel-peer"
+  },
+  "hooks": {
+    "internal": {
+      "enabled": true,
+      "entries": {
+        "boot-md": { "enabled": true },
+        "bootstrap-extra-files": { "enabled": true },
+        "command-logger": { "enabled": true },
+        "session-memory": { "enabled": true }
+      }
+    }
+  },
+  "channels": {
+    "feishu": {
+      "enabled": true,
+      "appId": "YOUR_FEISHU_APP_ID_HERE",
+      "appSecret": "YOUR_FEISHU_APP_SECRET_HERE",
+      "domain": "feishu",
+      "groupPolicy": "open"
+    },
+    "qqbot": {
+      "enabled": true
+    },
+    "ddingtalk": {
+      "enabled": true
+    },
+    "wecom": {
+      "enabled": true
+    }
+  },
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "loopback",
+    "controlUi": {
+      "allowedOrigins": ["http://localhost:18789"],
+      "allowInsecureAuth": false,
+      "dangerouslyDisableDeviceAuth": false
+    },
+    "auth": {
+      "mode": "token",
+      "token": "GENERATE_YOUR_OWN_TOKEN_HERE"
+    },
+    "tailscale": {
+      "mode": "off",
+      "resetOnExit": false
+    }
+  },
+  "skills": {
+    "install": {
+      "nodeManager": "npm"
+    }
+  },
+  "plugins": {
+    "entries": {
+      "feishu": { "enabled": true },
+      "qqbot": { "enabled": true },
+      "ddingtalk": { "enabled": true },
+      "wecom": { "enabled": true },
+      "adp-openclaw": { "enabled": true }
+    }
+  }
+}
