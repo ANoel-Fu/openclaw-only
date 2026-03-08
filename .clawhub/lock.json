@@ -48,6 +48,18 @@
     "capability-evolver": {
       "version": "1.23.0",
       "installedAt": 1772694138389
+    },
+    "stock-watcher": {
+      "version": "1.0.0",
+      "installedAt": 1772980620595
+    },
+    "new-akshare-stock": {
+      "version": "1.0.0",
+      "installedAt": 1772980653393
+    },
+    "finance-news": {
+      "version": "1.0.1",
+      "installedAt": 1772982616520
     }
   }
 }
