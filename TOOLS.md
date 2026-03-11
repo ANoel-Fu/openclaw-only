@@ -37,4 +37,18 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 
 ---
 
-Add whatever helps you do your job. This is your cheat sheet.
+## 🔧 API Keys & Services
+
+### Search Engines (Priority Order)
+
+1. **Tavily** (Primary) - AI-optimized search
+   - API Key: `~/.openclaw/.env` (TAVILY_API_KEY)
+   - Use for: Tech news, research, general queries
+   - Command: `node ~/.openclaw/workspace/skills/tavily-search/scripts/search.mjs "query"`
+
+2. **Brave Search** (Fallback) - Requires BRAVE_API_KEY
+   - Status: Not configured
+
+### Notes
+- Tavily is the default search engine for all web queries
+- For tech/news queries, always prefer Tavily

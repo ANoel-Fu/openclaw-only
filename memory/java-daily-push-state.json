@@ -1,0 +1,13 @@
+{
+  "lastPushDate": "2026-03-11",
+  "totalPushDays": 1,
+  "pushHistory": [
+    {
+      "date": "2026-03-11",
+      "questionIds": [1, 17, 23, 59, 60],
+      "categories": ["概念", "数据类型", "面向对象", "String", "Java 新特性"]
+    }
+  ],
+  "nextQuestionIndex": 5,
+  "questionsPool": "sequential"
+}

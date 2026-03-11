@@ -1,0 +1,19 @@
+{
+  "source": "https://www.xiaolincoding.com/interview/",
+  "sourceTitle": "小林 coding 面试题库",
+  "lastUpdated": "2026-03-11",
+  "linkFormat": "https://www.xiaolincoding.com/interview/{module}.html#{question-title-url-encoded}",
+  "example": {
+    "question": "String、StringBuffer、StringBuilder 的区别和联系",
+    "anchor": "#string%E3%80%81stringbuffer%E3%80%81stringbuilder%E7%9A%84%E5%8C%BA%E5%88%AB%E5%92%8C%E8%81%94%E7%B3%BB",
+    "fullUrl": "https://www.xiaolincoding.com/interview/java.html#string%E3%80%81stringbuffer%E3%80%81stringbuilder%E7%9A%84%E5%8C%BA%E5%88%AB%E5%92%8C%E8%81%94%E7%B3%BB"
+  },
+  "rule": "锚点 = 题目文本转小写 + URL 编码（中文标点也编码）",
+  "modules": {
+    "java-base": "java.html",
+    "java-collections": "collections.html",
+    "java-juc": "juc.html",
+    "java-jvm": "jvm.html",
+    "spring": "spring.html"
+  }
+}
