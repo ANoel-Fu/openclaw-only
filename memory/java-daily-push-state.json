@@ -1,13 +1,21 @@
 {
-  "lastPushDate": "2026-03-11",
+  "lastPushDate": "2026-03-12",
   "totalPushDays": 1,
   "pushHistory": [
     {
       "date": "2026-03-11",
       "questionIds": [1, 17, 23, 59, 60],
-      "categories": ["概念", "数据类型", "面向对象", "String", "Java 新特性"]
+      "categories": ["概念", "数据类型", "面向对象", "String", "Java 新特性"],
+      "modules": ["Java 基础"]
+    },
+    {
+      "date": "2026-03-12",
+      "questionCount": 5,
+      "modules": ["Java 基础", "Java 集合", "Java 并发", "JVM", "Spring"],
+      "note": "题库扩展到 5 大模块，共 24 道题目"
     }
   ],
-  "nextQuestionIndex": 5,
-  "questionsPool": "sequential"
+  "questionsPool": "multi-module",
+  "totalQuestions": 24,
+  "modules": ["Java 基础", "Java 集合", "Java 并发", "JVM", "Spring"]
 }
