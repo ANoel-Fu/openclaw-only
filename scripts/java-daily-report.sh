@@ -12,7 +12,7 @@ DATE=$(date '+%Y-%m-%d')
 TIME=$(date '+%H:%M')
 LOG_FILE="/root/.openclaw/workspace/logs/java-daily-report.log"
 TARGET_USER="ou_a7d902ae2ba72919f55a1e8180357c55"
-QUESTIONS_FILE="/root/.openclaw/workspace/memory/java-interview-questions-merged.json"
+QUESTIONS_FILE="/root/.openclaw/workspace/memory/java-interview-questions-detailed.json"
 
 # 确保日志目录存在
 mkdir -p /root/.openclaw/workspace/logs
@@ -46,25 +46,31 @@ PYTHON_SCRIPT
 # 构建消息内容
 MESSAGE="📚 *Java 学习日报* - $DATE
 
-今日精选 5 道面试题（5 大模块）：
+今日精选 5 道面试题（含详细解析）：
+
+━━━━━━━━━━━━━━━━━━━━
 
 "
 
 COUNT=1
 while IFS='|' read -r CATEGORY QUESTION ANSWER URL; do
-    MESSAGE+="${COUNT}. *【${CATEGORY}】${QUESTION}*
-   💡 ${ANSWER}
-   🔗 <${URL}|查看详细解析>
+    MESSAGE+="*${COUNT}. 【${CATEGORY}】*
+*Q：${QUESTION}*
+
+💡 *解析：*
+${ANSWER}
+
+🔗 <${URL}|查看完整解析>
+
+━━━━━━━━━━━━━━━━━━━━
 
 "
     COUNT=$((COUNT + 1))
 done <<< "$SELECTED_QUESTIONS"
 
-MESSAGE+="
----
-💪 坚持每天学习，大厂 offer 等着你！
-来源：小林 coding 面试题汇总
-模块：Java 基础 | Java 集合 | Java 并发 | JVM | Spring"
+MESSAGE+="💪 *坚持每天学习，大厂 offer 等着你！*
+📖 来源：小林 coding 面试题汇总
+📌 模块：Java 基础 | Java 集合 | Java 并发 | JVM | Spring"
 
 # 发送消息到飞书
 cd /root/.openclaw/workspace
