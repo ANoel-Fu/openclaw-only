@@ -4,18 +4,52 @@
   "pushHistory": [
     {
       "date": "2026-03-11",
-      "questionIds": [1, 17, 23, 59, 60],
-      "categories": ["概念", "数据类型", "面向对象", "String", "Java 新特性"],
-      "modules": ["Java 基础"]
+      "questionIds": [
+        1,
+        17,
+        23,
+        59,
+        60
+      ],
+      "categories": [
+        "概念",
+        "数据类型",
+        "面向对象",
+        "String",
+        "Java 新特性"
+      ],
+      "modules": [
+        "Java 基础"
+      ]
     },
     {
       "date": "2026-03-12",
       "questionCount": 5,
-      "modules": ["Java 基础", "Java 集合", "Java 并发", "JVM", "Spring"],
+      "modules": [
+        "Java 基础",
+        "Java 集合",
+        "Java 并发",
+        "JVM",
+        "Spring"
+      ],
       "note": "题库扩展到 5 大模块，共 24 道题目"
     }
   ],
   "questionsPool": "multi-module",
-  "totalQuestions": 24,
-  "modules": ["Java 基础", "Java 集合", "Java 并发", "JVM", "Spring"]
+  "totalQuestions": 326,
+  "modules": [
+    "Java 基础",
+    "Java 集合",
+    "Java 并发",
+    "JVM",
+    "Spring"
+  ],
+  "lastUpdate": "2026-03-14 10:28:26",
+  "sources": {
+    "Java 基础": 95,
+    "Java 集合": 54,
+    "Java 并发": 72,
+    "JVM": 40,
+    "Spring": 65
+  }
 }
