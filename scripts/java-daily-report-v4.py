@@ -9,7 +9,7 @@ import sys
 from datetime import datetime
 from urllib.parse import quote
 
-QUESTIONS_FILE = "/root/.openclaw/workspace/memory/java-interview-questions-detailed.json"
+QUESTIONS_FILE = "/root/.openclaw/workspace/memory/java-interview-questions-complete.json"
 TARGET_USER = "ou_a7d902ae2ba72919f55a1e8180357c55"
 
 def load_questions():
