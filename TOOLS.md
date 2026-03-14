@@ -44,7 +44,8 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 1. **Tavily** (Primary) - AI-optimized search ✅ **已配置**
    - API Key: `~/.openclaw/.env` (TAVILY_API_KEY)
    - 配置时间：2026-03-11
-   - 使用场景：科技新闻、研究查询、一般搜索
+   - **使用规则**：以后访问网址优先使用 Tavily
+   - 使用场景：科技新闻、研究查询、一般搜索、**网页内容获取**
    - 命令示例：
      ```bash
      # 一般搜索
@@ -55,12 +56,16 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
      
      # 深度搜索
      node ~/.openclaw/workspace/skills/tavily-search/scripts/search.mjs "query" --deep
+     
+     # 提取网页内容
+     node ~/.openclaw/workspace/skills/tavily-search/scripts/extract.mjs "https://example.com"
      ```
 
 2. **Brave Search** (Fallback) - Requires BRAVE_API_KEY
    - Status: Not configured
 
 ### Notes
+- ⭐ **重要规则**：以后只要访问网址，优先使用 Tavily（search 或 extract）
 - Tavily is the default search engine for all web queries
 - For tech/news queries, always prefer Tavily
 
