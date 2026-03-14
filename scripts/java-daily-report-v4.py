@@ -147,11 +147,6 @@ def create_daily_report(questions):
     content.append(f"📝 今日题目：{len(questions)}道")
     content.append(f"📖 模块：{', '.join(categories)}")
     content.append("")
-    content.append("---")
-    content.append("")
-    content.append("**💪 坚持每天学习，大厂 offer 等着你！**")
-    content.append("")
-    content.append("📖 来源：小林 coding 面试题汇总")
     
     return '\n'.join(content)
 

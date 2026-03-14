@@ -83,8 +83,16 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 
 **推送时间**：每天早上 9:30、晚上 23:00
 **题库位置**：`~/.openclaw/workspace/memory/java-interview-questions-complete.json`
-**题目数量**：113 道（无重复）
+**题库更新**：每天凌晨 2 点自动从 小林 coding 爬取更新
+**题目数量**：目标约 400 道
 **每日推送**：5 道随机题目
+
+**题库源（小林 coding）**：
+1. Java 基础：https://www.xiaolincoding.com/interview/java.html
+2. Java 集合：https://www.xiaolincoding.com/interview/collections.html
+3. Java 并发：https://www.xiaolincoding.com/interview/juc.html
+4. JVM：https://www.xiaolincoding.com/interview/jvm.html
+5. Spring：https://www.xiaolincoding.com/interview/spring.html
 
 **题库格式**：
 ```json
@@ -102,13 +110,22 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 **推送格式**：
 - Markdown 格式文本（飞书自动渲染）
 - 每题包含：问题、详细答案、来源链接
+- **链接规则**：锚点有空格时提供两个版本（去除空格、替换为 -）
 - 分类覆盖：Java 基础、集合、并发、JVM、Spring 等
-- 末尾显示学习统计和鼓励语
+- 末尾显示学习统计（无鼓励语）
 
-**脚本位置**：`~/.openclaw/workspace/scripts/java-daily-report-v4.py`
+**脚本位置**：
+- 推送脚本：`~/.openclaw/workspace/scripts/java-daily-report-v4.py`
+- 题库更新：`~/.openclaw/workspace/scripts/java-question-bank-updater.py`
 
-**题库统计**（2026-03-14）：
-- 总题目：113 道
-- 详细答案（>400 字）：37 道
-- 分类：Java 基础 (15)、面向对象 (14)、并发 (12)、数据类型 (11)、JVM (8) 等
-- 学习周期：约 23 天完成一轮（每天 5 道）
+**Cron 配置**：
+```bash
+# Java 题库自动更新 - 每天凌晨 2 点
+0 2 * * * python3 scripts/java-question-bank-updater.py
+
+# Java 学习日报 - 每天 9:30 和 23:00
+30 9 * * * TZ=Asia/Shanghai scripts/java-daily-report-v4.py
+0 23 * * * TZ=Asia/Shanghai scripts/java-daily-report-v4.py
+```
+
+**格式规范**：`~/.openclaw/workspace/memory/java-daily-report-format-spec.md`
