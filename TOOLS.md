@@ -84,15 +84,15 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 **推送时间**：每天早上 9:30、晚上 23:00
 **题库位置**：`~/.openclaw/workspace/memory/java-interview-questions-complete.json`
 **题库更新**：每天凌晨 2 点自动从 小林 coding 爬取更新
-**题目数量**：目标约 400 道
+**题目数量**：326 道（小林 coding 官方题库）
 **每日推送**：5 道随机题目
 
 **题库源（小林 coding）**：
-1. Java 基础：https://www.xiaolincoding.com/interview/java.html
-2. Java 集合：https://www.xiaolincoding.com/interview/collections.html
-3. Java 并发：https://www.xiaolincoding.com/interview/juc.html
-4. JVM：https://www.xiaolincoding.com/interview/jvm.html
-5. Spring：https://www.xiaolincoding.com/interview/spring.html
+1. Java 基础：https://www.xiaolincoding.com/interview/java.html（95 题）
+2. Java 集合：https://www.xiaolincoding.com/interview/collections.html（54 题）
+3. Java 并发：https://www.xiaolincoding.com/interview/juc.html（72 题）
+4. JVM：https://www.xiaolincoding.com/interview/jvm.html（40 题）
+5. Spring：https://www.xiaolincoding.com/interview/spring.html（65 题）
 
 **题库格式**：
 ```json
@@ -116,11 +116,11 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 
 **脚本位置**：
 - 推送脚本：`~/.openclaw/workspace/scripts/java-daily-report-v4.py`
-- 题库更新：`~/.openclaw/workspace/scripts/java-question-bank-updater.py`
+- 题库更新：`~/.openclaw/workspace/scripts/java-question-bank-updater.py`（使用 Tavily）
 
 **Cron 配置**：
 ```bash
-# Java 题库自动更新 - 每天凌晨 2 点
+# Java 题库自动更新 - 每天凌晨 2 点（Tavily）
 0 2 * * * python3 scripts/java-question-bank-updater.py
 
 # Java 学习日报 - 每天 9:30 和 23:00
@@ -129,3 +129,8 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 ```
 
 **格式规范**：`~/.openclaw/workspace/memory/java-daily-report-format-spec.md`
+
+**题库统计**（2026-03-14 10:28）：
+- 总题目：326 道
+- 分类：Java 基础 (95)、并发 (72)、Spring (65)、集合 (54)、JVM (40)
+- 学习周期：约 65 天完成一轮（每天 5 道）

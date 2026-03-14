@@ -100,15 +100,15 @@
 
 #### 题库文件
 - **位置：** `/root/.openclaw/workspace/memory/java-interview-questions-complete.json`
-- **更新方式：** 每天凌晨 2 点自动从源题库爬取更新
-- **目标题量：** 约 400 道
+- **更新方式：** 每天凌晨 2 点自动从 小林 coding 爬取更新（使用 Tavily）
+- **题目总数：** 326 道（小林 coding 官方题库）
 
 #### 题库源（小林 coding）
-1. **Java 基础：** https://www.xiaolincoding.com/interview/java.html
-2. **Java 集合：** https://www.xiaolincoding.com/interview/collections.html
-3. **Java 并发：** https://www.xiaolincoding.com/interview/juc.html
-4. **JVM：** https://www.xiaolincoding.com/interview/jvm.html
-5. **Spring：** https://www.xiaolincoding.com/interview/spring.html
+1. **Java 基础：** https://www.xiaolincoding.com/interview/java.html（95 题）
+2. **Java 集合：** https://www.xiaolincoding.com/interview/collections.html（54 题）
+3. **Java 并发：** https://www.xiaolincoding.com/interview/juc.html（72 题）
+4. **JVM：** https://www.xiaolincoding.com/interview/jvm.html（40 题）
+5. **Spring：** https://www.xiaolincoding.com/interview/spring.html（65 题）
 
 #### 题目格式
 ```json
@@ -130,11 +130,11 @@
 
 ### 6. 脚本路径
 - **推送脚本：** `/root/.openclaw/workspace/scripts/java-daily-report-v4.py`
-- **题库更新：** `/root/.openclaw/workspace/scripts/java-question-bank-updater.py`
+- **题库更新：** `/root/.openclaw/workspace/scripts/java-question-bank-updater.py`（使用 Tavily extract）
 
 ### 7. Cron 配置
 ```bash
-# Java 题库自动更新 - 每天凌晨 2 点执行
+# Java 题库自动更新 - 每天凌晨 2 点（Tavily）
 0 2 * * * cd /root/.openclaw/workspace && python3 scripts/java-question-bank-updater.py >> logs/java-question-bank-update.log 2>&1
 
 # Java 学习日报 - 每天早上 9:30 和晚上 23:00 (Asia/Shanghai)
@@ -188,11 +188,12 @@ JVM 是 Java 虚拟机（运行环境）；JRE=JVM+ 核心类库（运行时环�
 
 ## 🔄 更新日志
 
-### 2026-03-14
-- ✅ 链接规则：锚点有空格时提供两个版本（去除空格、替换为 -）
-- ✅ 题库更新：每天凌晨 2 点自动从 5 个小林 coding 题库爬取
-- ✅ 删除鼓励语：移除日报末尾的鼓励语
-- ✅ 题库目标：约 400 道题
+### 2026-03-14 - 重大更新
+- ✅ **题库更新**：使用 Tavily extract 获取小林 coding 官方题库
+- ✅ **题目数量**：326 道（Java 基础 95、并发 72、Spring 65、集合 54、JVM 40）
+- ✅ **链接规则**：锚点有空格时提供两个版本（去除空格、替换为 -）
+- ✅ **删除鼓励语**：移除日报末尾的鼓励语
+- ✅ **自动更新**：每天凌晨 2 点执行
 
 ### 2026-03-13
 - ✅ 初始版本：28 道精选题，每题 300-500 字详细解析
