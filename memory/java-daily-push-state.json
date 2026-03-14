@@ -36,7 +36,7 @@
     }
   ],
   "questionsPool": "multi-module",
-  "totalQuestions": 326,
+  "totalQuestions": 291,
   "modules": [
     "Java 基础",
     "Java 集合",
@@ -44,12 +44,12 @@
     "JVM",
     "Spring"
   ],
-  "lastUpdate": "2026-03-14 10:28:26",
+  "lastUpdate": "2026-03-14 10:55:40",
   "sources": {
-    "Java 基础": 95,
-    "Java 集合": 54,
-    "Java 并发": 72,
-    "JVM": 40,
-    "Spring": 65
+    "Java 基础": 76,
+    "Java 集合": 52,
+    "Java 并发": 67,
+    "JVM": 36,
+    "Spring": 60
   }
 }

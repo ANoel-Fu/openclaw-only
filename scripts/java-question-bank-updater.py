@@ -168,34 +168,37 @@ def parse_questions_from_extract(content, category, base_url):
     if not content:
         return questions
     
-    # 查找题目模式
-    pattern = r'(?:###|##)\s*#?\s*(.+?)\s*\n(.*?)(?=(?:###|##)|\Z)'
+    # 小林 coding 的格式：### [#](#锚点) 题目文本
+    # 或者：## [#](#锚点) 分类名
+    pattern = r'(?:###|##)\s*\[#\]\(#([^)]+)\)\s*(.+?)\s*\n(.*?)(?=(?:###|##)|\Z)'
     matches = re.findall(pattern, content, re.DOTALL)
     
     for match in matches:
-        question_text = match[0].strip()
-        answer_text = match[1].strip()
+        anchor = match[0].strip()
+        title_or_category = match[1].strip()
+        answer_text = match[2].strip()
         
-        # 清理
-        question_text = question_text.replace('#', '').strip()
+        # 跳过分类标题（没有答案内容或答案很短）
+        if len(answer_text) < 50 or any(skip in title_or_category for skip in ['汇总', '面试', '目录', '首页']):
+            continue
+        
+        # 清理答案文本
+        answer_text = re.sub(r'^\n+', '', answer_text)
         answer_text = re.sub(r'\n{3,}', '\n\n', answer_text)
         
-        # 跳过非题目内容
-        if len(question_text) < 5 or len(question_text) > 200:
-            continue
-        if any(skip in question_text for skip in ['汇总', '面试', '目录', '首页']):
-            continue
-        
-        # 生成 URL
-        anchor = question_text.lower()
+        # 生成 URL（确保有 .html）
         safe_chars = '-_.!~*\'()'
-        url = f"{base_url}#{quote(anchor, safe=safe_chars)}"
+        # 如果 base_url 不以.html 结尾，添加.html
+        if not base_url.endswith('.html'):
+            full_url = f"{base_url}.html#{quote(anchor, safe=safe_chars)}"
+        else:
+            full_url = f"{base_url}#{quote(anchor, safe=safe_chars)}"
         
         questions.append({
-            "question": question_text,
+            "question": title_or_category,
             "answer": answer_text[:2000],  # 限制答案长度
             "category": category,
-            "url": url,
+            "url": full_url,
             "timesSent": 0,
             "lastSent": None
         })
