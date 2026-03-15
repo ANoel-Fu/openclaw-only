@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>衣柜梳妆台组合 - 3D 展示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            padding: 30px 0;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn.active {
+            background: #F97316;
+            border-color: #F97316;
+        }
+
+        .scene-container {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 968px) {
+            .scene-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .scene {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-height: 600px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .wardrobe-3d {
+            width: 100%;
+            height: 500px;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: rotateY(-15deg) rotateX(5deg);
+            transition: transform 0.5s ease;
+        }
+
+        .wardrobe-section {
+            position: absolute;
+            background: linear-gradient(145deg, #F8FAFC 0%, #E2E8F0 100%);
+            border-radius: 8px;
+            box-shadow: 
+                0 20px 60px rgba(0,0,0,0.3),
+                inset 0 1px 0 rgba(255,255,255,0.5);
+            transition: all 0.4s ease;
+        }
+
+        .left-section {
+            width: 30%;
+            height: 100%;
+            left: 0;
+            top: 0;
+        }
+
+        .middle-section {
+            width: 30%;
+            height: 100%;
+            left: 32%;
+            top: 0;
+        }
+
+        .right-section {
+            width: 32%;
+            height: 100%;
+            right: 0;
+            top: 0;
+            background: linear-gradient(145deg, #F8FAFC 0%, #CBD5E1 100%);
+        }
+
+        .door {
+            position: absolute;
+            width: 100%;
+            height: 75%;
+            top: 15%;
+            background: rgba(248, 250, 252, 0.9);
+            border-radius: 6px;
+            transform-origin: left;
+            transition: transform 0.6s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+
+        .door:hover {
+            background: rgba(248, 250, 252, 1);
+        }
+
+        .door.open {
+            transform: rotateY(-110deg);
+        }
+
+        .door-handle {
+            width: 12px;
+            height: 60px;
+            background: linear-gradient(180deg, #F97316 0%, #EA580C 100%);
+            border-radius: 6px;
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            box-shadow: 0 2px 10px rgba(249, 115, 22, 0.4);
+        }
+
+        .section-label {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(30, 41, 59, 0.9);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        .interior {
+            position: absolute;
+            width: 95%;
+            height: 70%;
+            top: 17%;
+            left: 2.5%;
+            background: linear-gradient(180deg, #F1F5F9 0%, #E2E8F0 100%);
+            border-radius: 4px;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .door.open + .interior {
+            opacity: 1;
+        }
+
+        .shelf {
+            position: absolute;
+            background: #CBD5E1;
+            width: 100%;
+            height: 8px;
+        }
+
+        .shelf-1 { top: 20%; }
+        .shelf-2 { top: 45%; }
+        .shelf-3 { top: 70%; }
+
+        .hanging-rod {
+            position: absolute;
+            width: 80%;
+            height: 4px;
+            background: linear-gradient(90deg, #94A3B8 0%, #64748B 100%);
+            border-radius: 2px;
+            left: 10%;
+        }
+
+        .rod-1 { top: 35%; }
+        .rod-2 { top: 55%; }
+
+        .clothes {
+            position: absolute;
+            width: 60%;
+            height: 40px;
+            background: linear-gradient(180deg, #6366F1 0%, #4F46E5 100%);
+            border-radius: 4px 4px 0 0;
+            left: 20%;
+        }
+
+        .clothes-1 { top: 36%; }
+        .clothes-2 { top: 56%; }
+
+        .drawer {
+            position: absolute;
+            bottom: 5%;
+            width: 90%;
+            height: 12%;
+            left: 5%;
+            background: linear-gradient(180deg, #F8FAFC 0%, #E2E8F0 100%);
+            border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+
+        .drawer-handle {
+            width: 40px;
+            height: 8px;
+            background: linear-gradient(180deg, #F97316 0%, #EA580C 100%);
+            border-radius: 4px;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* 梳妆台区域 */
+        .vanity-mirror {
+            position: absolute;
+            width: 70%;
+            height: 35%;
+            top: 10%;
+            left: 15%;
+            background: linear-gradient(135deg, #E0E7FF 0%, #C7D2FE 100%);
+            border-radius: 50%;
+            border: 4px solid #F97316;
+            box-shadow: 
+                0 0 30px rgba(249, 115, 22, 0.3),
+                inset 0 0 20px rgba(255,255,255,0.5);
+            position: relative;
+        }
+
+        .mirror-light {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            box-shadow: 0 0 40px rgba(249, 115, 22, 0.5);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .mirror-light.on {
+            opacity: 1;
+        }
+
+        .vanity-top {
+            position: absolute;
+            bottom: 20%;
+            width: 90%;
+            height: 8%;
+            left: 5%;
+            background: linear-gradient(180deg, #FFFFFF 0%, #F1F5F9 100%);
+            border-radius: 4px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .vanity-drawer {
+            position: absolute;
+            bottom: 5%;
+            width: 85%;
+            height: 10%;
+            left: 7.5%;
+            background: linear-gradient(180deg, #F8FAFC 0%, #E2E8F0 100%);
+            border-radius: 4px;
+        }
+
+        .side-shelf {
+            position: absolute;
+            width: 15%;
+            height: 20%;
+            right: 0;
+            top: 35%;
+            background: linear-gradient(90deg, #E2E8F0 0%, #CBD5E1 100%);
+            border-radius: 4px;
+        }
+
+        .side-shelf-2 {
+            top: 58%;
+        }
+
+        /* 尺寸标注 */
+        .dimension-line {
+            position: absolute;
+            background: #F97316;
+            opacity: 0.8;
+        }
+
+        .dimension-text {
+            position: absolute;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+
+        /* 信息面板 */
+        .info-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .info-panel h3 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            opacity: 0.7;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .color-swatch {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            margin-right: 8px;
+            vertical-align: middle;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .feature-tag {
+            display: inline-block;
+            background: rgba(249, 115, 22, 0.3);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin: 3px;
+        }
+
+        /* 动画 */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* 夜间模式 */
+        body.night-mode {
+            background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
+        }
+
+        body.night-mode .scene {
+            background: rgba(30, 41, 59, 0.3);
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .wardrobe-3d {
+                height: 400px;
+            }
+            
+            .controls {
+                gap: 10px;
+            }
+            
+            .btn {
+                padding: 10px 16px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚪 衣柜梳妆台组合</h1>
+            <p>3D 交互式展示 · 点击柜门查看内部结构</p>
+        </header>
+
+        <div class="controls">
+            <button class="btn active" onclick="setView('front')">正视图</button>
+            <button class="btn" onclick="setView('angle')">斜视图</button>
+            <button class="btn" onclick="toggleAllDoors()">全部打开/关闭</button>
+            <button class="btn" onclick="toggleMirrorLight()">💡 镜前灯</button>
+            <button class="btn" onclick="toggleNightMode()">🌙 夜间模式</button>
+        </div>
+
+        <div class="scene-container">
+            <div class="scene">
+                <div class="wardrobe-3d" id="wardrobe">
+                    <!-- 左侧区域 - 长衣区 -->
+                    <div class="wardrobe-section left-section">
+                        <span class="section-label">长衣区 150cm</span>
+                        <div class="door" onclick="toggleDoor(this)">
+                            <div class="door-handle"></div>
+                        </div>
+                        <div class="interior">
+                            <div class="shelf shelf-1"></div>
+                            <div class="hanging-rod rod-1"></div>
+                            <div class="clothes clothes-1"></div>
+                            <div class="drawer">
+                                <div class="drawer-handle"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 中间区域 - 短衣区 -->
+                    <div class="wardrobe-section middle-section">
+                        <span class="section-label">短衣区 90cm</span>
+                        <div class="door" onclick="toggleDoor(this)">
+                            <div class="door-handle"></div>
+                        </div>
+                        <div class="interior">
+                            <div class="shelf shelf-1"></div>
+                            <div class="shelf shelf-2"></div>
+                            <div class="hanging-rod rod-2"></div>
+                            <div class="clothes clothes-2"></div>
+                            <div class="drawer">
+                                <div class="drawer-handle"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 右侧区域 - 梳妆台 -->
+                    <div class="wardrobe-section right-section">
+                        <span class="section-label">梳妆台</span>
+                        <div class="vanity-mirror">
+                            <div class="mirror-light" id="mirrorLight"></div>
+                        </div>
+                        <div class="vanity-top"></div>
+                        <div class="vanity-drawer">
+                            <div class="drawer-handle"></div>
+                        </div>
+                        <div class="side-shelf"></div>
+                        <div class="side-shelf side-shelf-2"></div>
+                    </div>
+
+                    <!-- 尺寸标注 -->
+                    <div class="dimension-line" style="bottom: -30px; left: 0; width: 30%; height: 3px;"></div>
+                    <div class="dimension-text" style="bottom: -50px; left: 15%;">80cm</div>
+                    
+                    <div class="dimension-line" style="bottom: -30px; left: 32%; width: 30%; height: 3px;"></div>
+                    <div class="dimension-text" style="bottom: -50px; left: 47%;">80cm</div>
+                    
+                    <div class="dimension-line" style="bottom: -30px; right: 0; width: 32%; height: 3px;"></div>
+                    <div class="dimension-text" style="bottom: -50px; right: 16%;">60cm</div>
+                    
+                    <div class="dimension-line" style="left: -30px; top: 0; width: 3px; height: 100%;"></div>
+                    <div class="dimension-text" style="left: -60px; top: 50%; transform: translateY(-50%) rotate(-90deg);">240cm</div>
+                </div>
+            </div>
+
+            <div class="info-panel">
+                <h3>📐 设计规格</h3>
+                
+                <div class="info-item">
+                    <div class="info-label">总尺寸</div>
+                    <div class="info-value">宽 220cm × 高 240cm × 深 60cm</div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">颜色方案</div>
+                    <div class="info-value">
+                        <span class="color-swatch" style="background: #F8FAFC;"></span>
+                        暖白柜门
+                        <span class="color-swatch" style="background: #F97316;"></span>
+                        香槟金把手
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">材质</div>
+                    <div class="info-value">PET 肤感膜 + 实木颗粒板 + 岩板台面</div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">功能区</div>
+                    <div class="info-value">
+                        <span class="feature-tag">长衣悬挂</span>
+                        <span class="feature-tag">短衣悬挂</span>
+                        <span class="feature-tag">抽屉收纳</span>
+                        <span class="feature-tag">梳妆台</span>
+                        <span class="feature-tag">LED 镜灯</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">智能配置</div>
+                    <div class="info-value">
+                        <span class="feature-tag">感应灯带</span>
+                        <span class="feature-tag">轨道插座</span>
+                        <span class="feature-tag">活动隔板</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">风格</div>
+                    <div class="info-value">现代简约 · 玻璃拟态</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentView = 'front';
+        let isNightMode = false;
+
+        function toggleDoor(door) {
+            door.classList.toggle('open');
+        }
+
+        function toggleAllDoors() {
+            const doors = document.querySelectorAll('.door');
+            const allOpen = Array.from(doors).every(d => d.classList.contains('open'));
+            
+            doors.forEach(door => {
+                if (allOpen) {
+                    door.classList.remove('open');
+                } else {
+                    door.classList.add('open');
+                }
+            });
+        }
+
+        function setView(view) {
+            const wardrobe = document.getElementById('wardrobe');
+            const buttons = document.querySelectorAll('.controls .btn');
+            
+            if (view === 'front') {
+                wardrobe.style.transform = 'rotateY(0deg) rotateX(0deg)';
+                buttons[0].classList.add('active');
+                buttons[1].classList.remove('active');
+            } else if (view === 'angle') {
+                wardrobe.style.transform = 'rotateY(-15deg) rotateX(5deg)';
+                buttons[0].classList.remove('active');
+                buttons[1].classList.add('active');
+            }
+        }
+
+        function toggleMirrorLight() {
+            const light = document.getElementById('mirrorLight');
+            light.classList.toggle('on');
+        }
+
+        function toggleNightMode() {
+            isNightMode = !isNightMode;
+            document.body.classList.toggle('night-mode');
+            
+            // 夜间模式自动打开镜前灯
+            if (isNightMode) {
+                document.getElementById('mirrorLight').classList.add('on');
+            }
+        }
+
+        // 键盘控制
+        document.addEventListener('keydown', (e) => {
+            if (e.key === ' ') {
+                e.preventDefault();
+                toggleAllDoors();
+            } else if (e.key === '1') {
+                setView('front');
+            } else if (e.key === '2') {
+                setView('angle');
+            } else if (e.key === 'm' || e.key === 'M') {
+                toggleMirrorLight();
+            } else if (e.key === 'n' || e.key === 'N') {
+                toggleNightMode();
+            }
+        });
+
+        // 鼠标拖拽旋转
+        let isDragging = false;
+        let startX, startY;
+        let rotateX = 5, rotateY = -15;
+
+        const scene = document.querySelector('.scene');
+        
+        scene.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            
+            const deltaX = e.clientX - startX;
+            const deltaY = e.clientY - startY;
+            
+            rotateY += deltaX * 0.5;
+            rotateX -= deltaY * 0.5;
+            
+            const wardrobe = document.getElementById('wardrobe');
+            wardrobe.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+            
+            startX = e.clientX;
+            startY = e.clientY;
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        // 触摸支持
+        scene.addEventListener('touchstart', (e) => {
+            isDragging = true;
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            
+            const deltaX = e.touches[0].clientX - startX;
+            const deltaY = e.touches[0].clientY - startY;
+            
+            rotateY += deltaX * 0.5;
+            rotateX -= deltaY * 0.5;
+            
+            const wardrobe = document.getElementById('wardrobe');
+            wardrobe.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+            
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        });
+
+        document.addEventListener('touchend', () => {
+            isDragging = false;
+        });
+    </script>
+</body>
+</html>
