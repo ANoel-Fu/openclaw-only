@@ -196,4 +196,29 @@ _下次推送：明日 8:50_
     return report
 
 if __name__ == "__main__":
-    print(generate_report())
+    import subprocess
+    import os
+    
+    report = generate_report()
+    
+    # 发送消息到飞书
+    target_user = "ou_a7d902ae2ba72919f55a1e8180357c55"
+    
+    # 使用 openclaw message 发送
+    cmd = [
+        "/root/.local/share/pnpm/openclaw",
+        "message",
+        "send",
+        "--channel", "feishu",
+        "--target", target_user,
+        "--message", report
+    ]
+    
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    
+    if result.returncode == 0:
+        print("✅ 消息发送成功")
+        print(result.stdout)
+    else:
+        print("❌ 消息发送失败")
+        print(result.stderr)
