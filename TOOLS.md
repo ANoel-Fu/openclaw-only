@@ -139,3 +139,36 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 - 总题目：326 道
 - 分类：Java 基础 (95)、并发 (72)、Spring (65)、集合 (54)、JVM (40)
 - 学习周期：约 65 天完成一轮（每天 5 道）
+
+---
+
+## 🦊 反检测浏览器配置
+
+**工具**：camoufox-cli
+**安装时间**：2026-03-17
+**用途**：访问需要反检测的网站（Cloudflare 保护、反爬虫网站等）
+
+**使用规则**：
+- 当用户要求访问网站且遇到反爬虫/反检测保护时，优先使用 camoufox-cli
+- 典型场景：访问微信、Twitter、Reddit 等有反 bot 保护的网站
+- 命令示例：
+  ```bash
+  # 打开网页
+  camoufox-cli open https://example.com
+  
+  # 获取可交互元素
+  camoufox-cli snapshot -i
+  
+  # 点击元素
+  camoufox-cli click @e1
+  
+  # 截图
+  camoufox-cli screenshot page.png
+  
+  # 关闭浏览器
+  camoufox-cli close
+  ```
+
+**与 Tavily 的配合**：
+- 一般网页内容获取 → 优先用 Tavily extract（快速、轻量）
+- 遇到反检测/需要交互 → 使用 camoufox-cli（强大、可交互）
