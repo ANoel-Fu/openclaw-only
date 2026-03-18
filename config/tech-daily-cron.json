@@ -1,0 +1,58 @@
+{
+  "name": "AI 科技日报",
+  "description": "每日上午 9 点自动抓取科技新闻并推送到飞书",
+  "schedule": {
+    "kind": "cron",
+    "expr": "0 9 * * *",
+    "tz": "Asia/Shanghai"
+  },
+  "sources": [
+    {
+      "name": "36 氪",
+      "rss": "https://rsshub.app/36kr"
+    },
+    {
+      "name": "虎嗅",
+      "rss": "https://rsshub.app/huxiu/article"
+    },
+    {
+      "name": "机器之心",
+      "rss": "https://rsshub.app/jiqizhixin/article"
+    },
+    {
+      "name": "量子位",
+      "rss": "https://rsshub.app/qbitai"
+    },
+    {
+      "name": "腾讯科技",
+      "rss": "https://rsshub.app/qq/news/tech"
+    },
+    {
+      "name": "网易科技",
+      "rss": "https://rsshub.app/netease/news/tech"
+    },
+    {
+      "name": "新浪科技",
+      "rss": "https://rsshub.app/sina/tech"
+    },
+    {
+      "name": "GitHub Trending",
+      "rss": "https://rsshub.app/github/trending/daily"
+    }
+  ],
+  "output": {
+    "format": "markdown",
+    "channel": "feishu",
+    "target": "ou_a7d902ae2ba72919f55a1e8180357c55",
+    "maxItems": 20,
+    "dedupThreshold": 0.85
+  },
+  "categories": [
+    { "tag": "#AI", "keywords": ["人工智能", "大模型", "AI", "机器学习", "深度学习", "GPT", "Claude", "Gemini"] },
+    { "tag": "#互联网", "keywords": ["互联网", "腾讯", "阿里", "字节", "美团", "拼多多"] },
+    { "tag": "#硬件", "keywords": ["手机", "芯片", "半导体", "华为", "小米", "苹果", "三星"] },
+    { "tag": "#投资", "keywords": ["融资", "并购", "IPO", "估值", "投资", "创业"] },
+    { "tag": "#政策", "keywords": ["监管", "政策", "法规", "审查", "许可"] },
+    { "tag": "#国际", "keywords": ["美国", "硅谷", "欧洲", "日本", "海外"] }
+  ]
+}
