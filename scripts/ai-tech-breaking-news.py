@@ -5,10 +5,15 @@ AI/Tech News - Real-time Alert
 AI/科技新闻实时推送 - 重要新闻即时推送
 """
 
+import os
 import subprocess
 import json
 import re
 from datetime import datetime
+
+# 确保环境变量完整（不依赖 cron 环境）
+os.environ['PATH'] = '/root/.nvm/versions/node/v22.22.0/bin:/root/.local/share/pnpm/bin:/usr/local/bin:/usr/bin:/bin:' + os.environ.get('PATH', '')
+os.environ['TZ'] = 'Asia/Shanghai'
 
 LIGHTPANDA_BIN = "/root/.local/bin/lightpanda"
 

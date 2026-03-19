@@ -5,10 +5,15 @@ AI/Tech Daily News - Lightpanda Version V2 (Optimized)
 每日 AI/科技热点新闻收集 - Lightpanda 驱动 + AI 摘要 + 多来源
 """
 
+import os
 import subprocess
 import json
 import re
 from datetime import datetime
+
+# 确保环境变量完整（不依赖 cron 环境）
+os.environ['PATH'] = '/root/.nvm/versions/node/v22.22.0/bin:/root/.local/share/pnpm/bin:/usr/local/bin:/usr/bin:/bin:' + os.environ.get('PATH', '')
+os.environ['TZ'] = 'Asia/Shanghai'
 
 # 配置
 DATE = datetime.now().strftime('%Y-%m-%d')
