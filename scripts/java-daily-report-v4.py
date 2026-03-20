@@ -61,15 +61,67 @@ def select_questions(questions, count=5):
         return random.sample(questions, count)
     return questions
 
+def split_compressed_code(code_text):
+    """
+    将压缩成一行的 Java 代码拆分成多行
+    
+    处理规则：
+    - 在注解后拆分 (@Service, @Autowired, @Override 等)
+    - 在方法声明、类声明处拆分
+    - 在分号后拆分
+    - 在左大括号后拆分
+    - 在右大括号前后拆分
+    """
+    import re
+    
+    # 如果代码已经有多行，直接返回
+    if '\n' in code_text:
+        return code_text
+    
+    # 1. 在注解后添加换行
+    code_text = re.sub(r'(@\w+)', r'\n\1', code_text)
+    
+    # 2. 在类声明处拆分（保留 public class 在一起）
+    code_text = re.sub(r'(public\s+class\s+\w+)', r'\n\1', code_text)
+    code_text = re.sub(r'(private\s+class\s+\w+)', r'\n\1', code_text)
+    
+    # 3. 在方法声明处拆分
+    code_text = re.sub(r'(public\s+\w+\s+\w+\s*\([^)]*\)\s*\{)', r'\n\1', code_text)
+    code_text = re.sub(r'(private\s+\w+\s+\w+\s*\([^)]*\)\s*\{)', r'\n\1', code_text)
+    code_text = re.sub(r'(protected\s+\w+\s+\w+\s*\([^)]*\)\s*\{)', r'\n\1', code_text)
+    
+    # 4. 在字段声明处拆分（private final Xxx xxx;）
+    code_text = re.sub(r'(private\s+final\s+\w+\s+\w+;)', r'\n\1', code_text)
+    code_text = re.sub(r'(private\s+\w+\s+\w+;)', r'\n\1', code_text)
+    code_text = re.sub(r'(public\s+\w+\s+\w+;)', r'\n\1', code_text)
+    
+    # 5. 在分号后添加换行（如果还没有换行）
+    code_text = re.sub(r';', ';\n', code_text)
+    
+    # 6. 在左大括号后添加换行
+    code_text = re.sub(r'\{', '{\n', code_text)
+    
+    # 7. 在右大括号前添加换行
+    code_text = re.sub(r'\}', '\n}', code_text)
+    
+    # 8. 在注释前添加换行（// 开头的注释）
+    code_text = re.sub(r'(//.+)', r'\n\1', code_text)
+    
+    return code_text
+
 def format_java_code(code_text):
     """
-    格式化 Java 代码（简单版本）
+    格式化 Java 代码（增强版本）
+    - 处理压缩成一行的代码
     - 统一缩进为 4 个空格
     - 移除多余空行
     - 保持代码结构清晰
     """
     if not code_text.strip():
         return ''
+    
+    # 首先处理压缩的代码
+    code_text = split_compressed_code(code_text)
     
     lines = code_text.split('\n')
     formatted_lines = []
@@ -93,7 +145,7 @@ def format_java_code(code_text):
         formatted_lines.append(indent_str * indent_level + stripped)
         
         # 检测增加缩进的符号（{）
-        if stripped.endswith('{') or stripped.endswith(':'):
+        if stripped.endswith('{'):
             indent_level += 1
     
     # 移除末尾的连续空行
