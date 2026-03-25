@@ -1,6 +1,6 @@
 {
   "name": "AI 科技日报",
-  "description": "每日上午 9 点自动抓取科技新闻并推送到飞书",
+  "description": "每日上午 9 点自动抓取科技新闻并推送到飞书（2026-03-25 更新：删除网易科技，优化过滤规则）",
   "schedule": {
     "kind": "cron",
     "expr": "0 9 * * *",
@@ -26,10 +26,6 @@
     {
       "name": "腾讯科技",
       "rss": "https://rsshub.app/qq/news/tech"
-    },
-    {
-      "name": "网易科技",
-      "rss": "https://rsshub.app/netease/news/tech"
     },
     {
       "name": "新浪科技",

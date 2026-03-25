@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-AI/Tech Daily News - Real-time Version (Updated 2026-03-25)
-每日 AI/科技热点新闻收集 - 只抓取实时新闻
-
-更新内容：
-1. ✅ 添加 36Kr 主站新闻抓取
-2. ❌ 删除网易科技
-3. ⏰ 严格时效性验证（仅当天新闻）
-4. 🚫 过滤各平台自家产品/广告
+AI/Tech Daily News - TEST VERSION (测试版)
+测试调整：
+1. 添加 36kr.com 主站新闻（不仅是快讯）
+2. 删除网易科技
+3. 仅抓取当天新闻，严格时效性
+4. 过滤各平台自家产品广告
 """
 
 import requests
@@ -31,17 +29,19 @@ HEADERS = {
 FILTER_KEYWORDS = [
     '广告', '推广', '赞助', '品牌', '营销', '合作',
     '36 氪 Pro', '36 氪研究院', '36 氪发布', '36 氪报道',
-    '虎嗅 Pro', '虎嗅研究', '虎嗅发布', '虎嗅智库',
-    '机器之心 PRO', '机器之心研究', '机器之心发布',
-    '量子位 PRO', '量子位智库', '量子位发布',
+    '虎嗅 Pro', '虎嗅研究', '虎嗅发布',
+    '机器之心 PRO', '机器之心研究',
+    '量子位 PRO', '量子位智库',
     '腾讯新闻', '腾讯财经', '腾讯体育',
     '新浪新闻', '新浪财经',
     '网易新闻', '网易财经',
-    '订阅', '关注', '公众号', '微信', 'APP 下载', '扫码'
+    '订阅', '关注', '公众号', '微信', 'APP 下载'
 ]
 
 def is_own_product(title, source):
     """判断是否为本平台自家产品内容"""
+    title_lower = title.lower()
+    
     # 检查是否包含自家产品关键词
     if source == '36Kr':
         if any(kw in title for kw in ['36 氪 Pro', '36 氪研究院', '36 氪发布', '36 氪报道', '36kr 研究']):
@@ -61,6 +61,10 @@ def is_own_product(title, source):
         return True
     
     return False
+
+def is_today(hours_ago=0):
+    """判断是否为当天新闻"""
+    return hours_ago < 24
 
 def fetch_36kr_newsflashes():
     """抓取 36Kr 快讯（实时性最好）"""
@@ -115,7 +119,7 @@ def fetch_36kr_main():
             text = response.text
             
             # 匹配主站文章链接
-            pattern = r'href="(/p/(\d+))"[^>]*title="([^"]+)"'
+            pattern = r'href="(/p/(\d+))"[^>]*>([^<]+)'
             matches = re.findall(pattern, text)
             
             for href, _, title in matches[:30]:
@@ -147,7 +151,7 @@ def fetch_36kr_main():
     return news_items[:10]
 
 def fetch_huxiu():
-    """抓取虎嗅（最新文章，严格过滤广告）"""
+    """抓取虎嗅（最新文章）"""
     news_items = []
     try:
         url = "https://www.huxiu.com/article/"
@@ -343,10 +347,10 @@ def format_news_item(item, rank=None):
    📝 {summary}"""
 
 def generate_report():
-    """生成完整日报（更新版）"""
+    """生成完整日报（测试版）"""
     
-    print("📰 开始抓取实时新闻...")
-    print("📋 已应用优化：")
+    print("📰 开始抓取实时新闻（测试版）...")
+    print("📋 测试调整：")
     print("   1. ✅ 添加 36Kr 主站新闻")
     print("   2. ❌ 删除网易科技")
     print("   3. ⏰ 仅抓取当天新闻")
@@ -369,7 +373,7 @@ def generate_report():
     all_news.extend(fetch_qbitai())
     
     # 网易科技 - 已删除 ❌
-    print("⚠️  网易科技：已移除")
+    print("⚠️  网易科技：已按测试要求删除")
     
     print(f"📊 总计抓取：{len(all_news)} 条")
     
@@ -406,9 +410,10 @@ def generate_report():
     }
     weekday_cn = weekday_map.get(WEEKDAY, '')
     
-    report = f"""# 🤖 AI/科技日报 - {DATE} {weekday_cn}
+    report = f"""# 🤖 AI/科技日报 - {DATE} {weekday_cn}【测试版】
 
 _每日热点精选 · 把握科技脉搏 · 综合多家来源_
+**🧪 测试调整：新增 36Kr 主站 | 删除网易科技 | 严格时效性 | 过滤自家产品**
 
 ---
 
@@ -438,7 +443,7 @@ _每日热点精选 · 把握科技脉搏 · 综合多家来源_
 
 _数据来源：{', '.join(sources_used)}（实时抓取）_
 _生成时间：{TIME}_
-_下次推送：明日 8:50_
+_⚠️ 测试版本，未应用到正式日报_
 
 ---
 **💬 互动**：回复"详细"获取某条新闻深度解读，回复"添加"自定义关注领域
@@ -466,7 +471,7 @@ if __name__ == "__main__":
     result = subprocess.run(cmd, capture_output=True, text=True)
     
     if result.returncode == 0:
-        print("\n✅ 消息发送成功")
+        print("\n✅ 测试版日报发送成功")
     else:
         print("\n❌ 消息发送失败")
         print(result.stderr)
