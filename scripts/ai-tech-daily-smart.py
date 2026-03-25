@@ -1,25 +1,33 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-AI/Tech Daily News - Real-time Version (Updated 2026-03-25)
-每日 AI/科技热点新闻收集 - 只抓取实时新闻
+AI/Tech Daily News - Lightpanda Version (2026-03-25)
+每日 AI/科技热点新闻收集 - 使用 Lightpanda 浏览器渲染
 
 更新内容：
-1. ✅ 添加 36Kr 主站新闻抓取
-2. ❌ 删除网易科技
-3. ⏰ 严格时效性验证（仅当天新闻）
-4. 🚫 过滤各平台自家产品/广告
+1. ✅ 使用 Lightpanda 渲染动态加载网站
+2. ✅ 添加 36Kr 主站新闻抓取
+3. ❌ 删除网易科技
+4. ⏰ 严格时效性验证（仅当天新闻）
+5. 🚫 过滤各平台自家产品/广告
 """
 
-import requests
+import os
+import subprocess
 import re
 from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
+
+# 确保环境变量完整
+os.environ['PATH'] = '/root/.nvm/versions/node/v22.22.0/bin:/root/.local/share/pnpm/bin:/usr/local/bin:/usr/bin:/bin:' + os.environ.get('PATH', '')
+os.environ['TZ'] = 'Asia/Shanghai'
 
 # 配置
 DATE = datetime.now().strftime('%Y-%m-%d')
 TIME = datetime.now().strftime('%H:%M')
 WEEKDAY = datetime.now().strftime('%A')
+
+LIGHTPANDA_BIN = "/root/.local/bin/lightpanda"
 
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -39,6 +47,31 @@ FILTER_KEYWORDS = [
     '网易新闻', '网易财经',
     '订阅', '关注', '公众号', '微信', 'APP 下载', '扫码'
 ]
+
+def fetch_with_lightpanda(url, timeout=25):
+    """使用 Lightpanda 快速抓取（渲染 JavaScript）"""
+    try:
+        cmd = [
+            LIGHTPANDA_BIN,
+            "fetch",
+            "--dump", "markdown",
+            "--log_level", "error",
+            "--http_timeout", "20000",
+            url
+        ]
+        
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=timeout
+        )
+        
+        return result.stdout if result.returncode == 0 else ""
+            
+    except Exception as e:
+        print(f"❌ Lightpanda 抓取 {url} 失败：{e}")
+        return ""
 
 def is_own_product(title, source):
     """判断是否为本平台自家产品内容"""
@@ -67,202 +100,27 @@ def fetch_36kr_newsflashes():
     news_items = []
     try:
         url = "https://36kr.com/newsflashes"
-        response = requests.get(url, headers=HEADERS, timeout=15)
-        response.encoding = 'utf-8'
+        content = fetch_with_lightpanda(url)
         
-        if response.status_code == 200:
-            text = response.text
-            pattern = r'href="(/newsflashes/\d+)"[^>]*>([^<]+)'
-            matches = re.findall(pattern, text)
+        if content:
+            lines = content.split('\n')
+            current_title = None
             
-            for href, title in matches[:30]:
-                title = title.strip()
+            for i, line in enumerate(lines):
+                line = line.strip()
                 
-                # 过滤条件
-                if len(title) <= 5 or len(title) >= 100:
-                    continue
-                if is_own_product(title, '36Kr'):
-                    continue
-                if any(kw in title for kw in FILTER_KEYWORDS):
-                    continue
-                
-                category = categorize_news(title)
-                news_items.append({
-                    "category": category,
-                    "title": title,
-                    "desc": "",
-                    "url": f"https://36kr.com{href}",
-                    "source": "36Kr 快讯",
-                    "hours_ago": 0
-                })
-            
-            print(f"✅ 36Kr 快讯 抓取成功：{len(news_items)} 条")
-            
-    except Exception as e:
-        print(f"❌ 36Kr 快讯 抓取失败：{e}")
-    
-    return news_items[:15]
-
-def fetch_36kr_main():
-    """抓取 36Kr 主站新闻（新增）"""
-    news_items = []
-    try:
-        url = "https://36kr.com/"
-        response = requests.get(url, headers=HEADERS, timeout=15)
-        response.encoding = 'utf-8'
-        
-        if response.status_code == 200:
-            text = response.text
-            
-            # 匹配主站文章链接
-            pattern = r'href="(/p/(\d+))"[^>]*title="([^"]+)"'
-            matches = re.findall(pattern, text)
-            
-            for href, _, title in matches[:30]:
-                title = title.strip()
-                
-                # 过滤条件
-                if len(title) <= 5 or len(title) >= 100:
-                    continue
-                if is_own_product(title, '36Kr'):
-                    continue
-                if any(kw in title for kw in FILTER_KEYWORDS):
-                    continue
-                
-                category = categorize_news(title)
-                news_items.append({
-                    "category": category,
-                    "title": title,
-                    "desc": "",
-                    "url": f"https://36kr.com{href}",
-                    "source": "36Kr",
-                    "hours_ago": 2
-                })
-            
-            print(f"✅ 36Kr 主站 抓取成功：{len(news_items)} 条")
-            
-    except Exception as e:
-        print(f"❌ 36Kr 主站 抓取失败：{e}")
-    
-    return news_items[:10]
-
-def fetch_huxiu():
-    """抓取虎嗅（最新文章，严格过滤广告）"""
-    news_items = []
-    try:
-        url = "https://www.huxiu.com/article/"
-        response = requests.get(url, headers=HEADERS, timeout=15)
-        response.encoding = 'utf-8'
-        
-        if response.status_code == 200:
-            text = response.text
-            
-            pattern = r'<a[^>]*href="(/article/(\d+)\.html)"[^>]*title="([^"]+)"'
-            matches = re.findall(pattern, text)
-            
-            for href, _, title in matches[:25]:
-                title = title.strip()
-                
-                # 过滤条件
-                if len(title) <= 5 or len(title) >= 100:
-                    continue
-                if '广告' in title or '推广' in title:
-                    continue
-                if is_own_product(title, '虎嗅'):
-                    continue
-                if any(kw in title for kw in FILTER_KEYWORDS):
-                    continue
-                
-                category = categorize_news(title)
-                news_items.append({
-                    "category": category,
-                    "title": title,
-                    "desc": "",
-                    "url": f"https://www.huxiu.com{href}",
-                    "source": "虎嗅",
-                    "hours_ago": 2
-                })
-            
-            print(f"✅ 虎嗅 抓取成功：{len(news_items)} 条")
-            
-    except Exception as e:
-        print(f"❌ 虎嗅 抓取失败：{e}")
-    
-    return news_items[:10]
-
-def fetch_jiqizhixin():
-    """抓取机器之心（只抓取当天）"""
-    news_items = []
-    try:
-        url = "https://www.jiqizhixin.com/"
-        response = requests.get(url, headers=HEADERS, timeout=15)
-        response.encoding = 'utf-8'
-        
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.text, 'html.parser')
-            
-            # 查找带时间标签的文章
-            for time_tag in soup.find_all('span', class_='item-time')[:20]:
-                time_str = time_tag.get_text().strip()
-                
-                # 只取"今天"或"小时前"的内容
-                if '今天' in time_str or '小时前' in time_str:
-                    article_div = time_tag.find_parent()
-                    if article_div:
-                        title_tag = article_div.find('a')
-                        if title_tag and title_tag.get('href'):
-                            title = title_tag.get_text().strip()
-                            href = title_tag['href']
-                            
-                            # 过滤条件
-                            if len(title) <= 5 or len(title) >= 100:
-                                continue
-                            if is_own_product(title, '机器之心'):
-                                continue
-                            if any(kw in title for kw in FILTER_KEYWORDS):
-                                continue
-                            
-                            category = categorize_news(title)
-                            news_items.append({
-                                "category": category,
-                                "title": title,
-                                "desc": "",
-                                "url": href if href.startswith('http') else f"https://www.jiqizhixin.com{href}",
-                                "source": "机器之心",
-                                "hours_ago": 1
-                            })
-            
-            print(f"✅ 机器之心 抓取成功：{len(news_items)} 条")
-            
-    except Exception as e:
-        print(f"❌ 机器之心 抓取失败：{e}")
-    
-    return news_items[:8]
-
-def fetch_qbitai():
-    """抓取量子位（只抓取当天）"""
-    news_items = []
-    try:
-        url = "https://www.qbitai.com/"
-        response = requests.get(url, headers=HEADERS, timeout=15)
-        response.encoding = 'utf-8'
-        
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.text, 'html.parser')
-            
-            # 查找文章
-            for article in soup.find_all('article', class_='post')[:25]:
-                title_tag = article.find('h2', class_='entry-title')
-                if title_tag:
-                    title = title_tag.get_text().strip()
-                    link_tag = title_tag.find('a')
-                    if link_tag and link_tag.get('href'):
-                        href = link_tag['href']
+                # 匹配快讯标题格式：[标题](链接)
+                if line.startswith('[') and '36kr.com/newsflashes/' in line:
+                    # 提取标题和链接
+                    match = re.match(r'\[([^\]]+)\]\((https?://36kr\.com/newsflashes/\d+)\)', line)
+                    if match:
+                        title = match.group(1).strip()
+                        url = match.group(2)
                         
                         # 过滤条件
                         if len(title) <= 5 or len(title) >= 100:
                             continue
-                        if is_own_product(title, '量子位'):
+                        if is_own_product(title, '36Kr'):
                             continue
                         if any(kw in title for kw in FILTER_KEYWORDS):
                             continue
@@ -272,10 +130,211 @@ def fetch_qbitai():
                             "category": category,
                             "title": title,
                             "desc": "",
-                            "url": href,
-                            "source": "量子位",
+                            "url": url,
+                            "source": "36Kr 快讯",
+                            "hours_ago": 0
+                        })
+            
+            print(f"✅ 36Kr 快讯 抓取成功：{len(news_items)} 条")
+            
+    except Exception as e:
+        print(f"❌ 36Kr 快讯 抓取失败：{e}")
+    
+    return news_items[:15]
+
+def fetch_36kr_main():
+    """抓取 36Kr 主站新闻（使用 Lightpanda 渲染）"""
+    news_items = []
+    try:
+        url = "https://36kr.com/"
+        content = fetch_with_lightpanda(url)
+        
+        if content:
+            lines = content.split('\n')
+            
+            for line in lines:
+                line = line.strip()
+                
+                # 匹配主站文章链接 /p/XXXXX
+                if '36kr.com/p/' in line and line.startswith('['):
+                    match = re.match(r'\[([^\]]+)\]\((https?://36kr\.com/p/\d+)\)', line)
+                    if match:
+                        title = match.group(1).strip()
+                        url = match.group(2)
+                        
+                        # 过滤条件
+                        if len(title) <= 5 or len(title) >= 100:
+                            continue
+                        if is_own_product(title, '36Kr'):
+                            continue
+                        if any(kw in title for kw in FILTER_KEYWORDS):
+                            continue
+                        
+                        category = categorize_news(title)
+                        news_items.append({
+                            "category": category,
+                            "title": title,
+                            "desc": "",
+                            "url": url,
+                            "source": "36Kr",
                             "hours_ago": 2
                         })
+            
+            print(f"✅ 36Kr 主站 抓取成功：{len(news_items)} 条")
+            
+    except Exception as e:
+        print(f"❌ 36Kr 主站 抓取失败：{e}")
+    
+    return news_items[:10]
+
+def fetch_huxiu():
+    """抓取虎嗅（使用 Lightpanda 渲染）"""
+    news_items = []
+    try:
+        url = "https://www.huxiu.com/article/"
+        content = fetch_with_lightpanda(url)
+        
+        if content:
+            lines = content.split('\n')
+            
+            # 匹配标题格式：### 标题
+            for i, line in enumerate(lines):
+                line = line.strip()
+                
+                # 查找文章标题（### 开头）
+                if line.startswith('### ') and len(line) > 10:
+                    title = line[4:].strip()
+                    
+                    # 查找下一行的链接
+                    if i + 1 < len(lines):
+                        next_line = lines[i + 1].strip()
+                        if 'huxiu.com/article/' in next_line:
+                            match = re.search(r'\((https?://www\.huxiu\.com/article/\d+\.html)\)', next_line)
+                            if match:
+                                url = match.group(1)
+                                
+                                # 过滤条件
+                                if len(title) <= 5 or len(title) >= 100:
+                                    continue
+                                if '广告' in title or '推广' in title:
+                                    continue
+                                if is_own_product(title, '虎嗅'):
+                                    continue
+                                if any(kw in title for kw in FILTER_KEYWORDS):
+                                    continue
+                                
+                                category = categorize_news(title)
+                                news_items.append({
+                                    "category": category,
+                                    "title": title,
+                                    "desc": "",
+                                    "url": url,
+                                    "source": "虎嗅",
+                                    "hours_ago": 2
+                                })
+            
+            print(f"✅ 虎嗅 抓取成功：{len(news_items)} 条")
+            
+    except Exception as e:
+        print(f"❌ 虎嗅 抓取失败：{e}")
+    
+    return news_items[:10]
+
+def fetch_jiqizhixin():
+    """抓取机器之心（使用 Lightpanda 渲染 + 时间验证）"""
+    news_items = []
+    try:
+        url = "https://www.jiqizhixin.com/"
+        content = fetch_with_lightpanda(url)
+        
+        if content:
+            lines = content.split('\n')
+            
+            # 匹配格式：标题 + 日期行
+            for i, line in enumerate(lines):
+                line = line.strip()
+                
+                # 查找日期行（03 月 24 日 格式）
+                if re.match(r'\d{2}月\d{2}日', line):
+                    # 检查是否为当天或昨天
+                    if '03 月 25 日' in line or '03 月 24 日' in line:  # 今天或昨天
+                        # 查找上一行的标题和链接
+                        if i > 0:
+                            prev_line = lines[i - 1].strip()
+                            # 匹配文章链接
+                            matches = re.findall(r'\[([^\]]+)\]\((https?://www\.jiqizhixin\.com/[^\)]+)\)', prev_line)
+                            
+                            for title, url in matches:
+                                title = title.strip()
+                                
+                                # 过滤条件
+                                if len(title) <= 5 or len(title) >= 100:
+                                    continue
+                                if is_own_product(title, '机器之心'):
+                                    continue
+                                if any(kw in title for kw in FILTER_KEYWORDS):
+                                    continue
+                                
+                                category = categorize_news(title)
+                                news_items.append({
+                                    "category": category,
+                                    "title": title,
+                                    "desc": "",
+                                    "url": url,
+                                    "source": "机器之心",
+                                    "hours_ago": 1
+                                })
+            
+            print(f"✅ 机器之心 抓取成功：{len(news_items)} 条")
+            
+    except Exception as e:
+        print(f"❌ 机器之心 抓取失败：{e}")
+    
+    return news_items[:8]
+
+def fetch_qbitai():
+    """抓取量子位（使用 Lightpanda 渲染）"""
+    news_items = []
+    try:
+        url = "https://www.qbitai.com/"
+        content = fetch_with_lightpanda(url)
+        
+        if content:
+            lines = content.split('\n')
+            
+            # 匹配格式：### 标题
+            for i, line in enumerate(lines):
+                line = line.strip()
+                
+                # 查找文章标题（### 开头）
+                if line.startswith('### ') and len(line) > 10:
+                    title = line[4:].strip()
+                    
+                    # 查找下一行的链接
+                    if i + 1 < len(lines):
+                        next_line = lines[i + 1].strip()
+                        if 'qbitai.com/' in next_line:
+                            match = re.search(r'\((https?://www\.qbitai\.com/\d{4}/\d{2}/\d{2}/\d+\.html)\)', next_line)
+                            if match:
+                                url = match.group(1)
+                                
+                                # 过滤条件
+                                if len(title) <= 5 or len(title) >= 100:
+                                    continue
+                                if is_own_product(title, '量子位'):
+                                    continue
+                                if any(kw in title for kw in FILTER_KEYWORDS):
+                                    continue
+                                
+                                category = categorize_news(title)
+                                news_items.append({
+                                    "category": category,
+                                    "title": title,
+                                    "desc": "",
+                                    "url": url,
+                                    "source": "量子位",
+                                    "hours_ago": 2
+                                })
             
             print(f"✅ 量子位 抓取成功：{len(news_items)} 条")
             
@@ -343,29 +402,34 @@ def format_news_item(item, rank=None):
    📝 {summary}"""
 
 def generate_report():
-    """生成完整日报（更新版）"""
+    """生成完整日报（Lightpanda 版本）"""
     
-    print("📰 开始抓取实时新闻...")
+    print("📰 开始抓取实时新闻（Lightpanda 渲染版）...")
     print("📋 已应用优化：")
-    print("   1. ✅ 添加 36Kr 主站新闻")
-    print("   2. ❌ 删除网易科技")
-    print("   3. ⏰ 仅抓取当天新闻")
-    print("   4. 🚫 过滤自家产品内容")
+    print("   1. ✅ 使用 Lightpanda 浏览器渲染")
+    print("   2. ✅ 添加 36Kr 主站新闻")
+    print("   3. ❌ 删除网易科技")
+    print("   4. ⏰ 仅抓取当天新闻")
+    print("   5. 🚫 过滤自家产品内容")
     print()
     
     all_news = []
     
     # 36Kr（快讯 + 主站）
+    print("🔍 抓取 36Kr...")
     all_news.extend(fetch_36kr_newsflashes())
     all_news.extend(fetch_36kr_main())
     
     # 虎嗅
+    print("🔍 抓取虎嗅...")
     all_news.extend(fetch_huxiu())
     
     # 机器之心
+    print("🔍 抓取机器之心...")
     all_news.extend(fetch_jiqizhixin())
     
     # 量子位
+    print("🔍 抓取量子位...")
     all_news.extend(fetch_qbitai())
     
     # 网易科技 - 已删除 ❌
@@ -436,7 +500,7 @@ _每日热点精选 · 把握科技脉搏 · 综合多家来源_
 
 ---
 
-_数据来源：{', '.join(sources_used)}（实时抓取）_
+_数据来源：{', '.join(sources_used)}（Lightpanda 浏览器渲染）_
 _生成时间：{TIME}_
 _下次推送：明日 8:50_
 
