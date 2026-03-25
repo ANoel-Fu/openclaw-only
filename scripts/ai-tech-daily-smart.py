@@ -347,25 +347,46 @@ def fetch_qbitai():
     return news_items[:8]
 
 def categorize_news(title):
-    """根据关键词自动分类新闻"""
+    """根据关键词自动分类新闻（优化版）"""
     text = title.lower()
     
-    if any(kw in text for kw in ['大模型', 'llm', 'gpt', 'ai agent', '智能体', 'ai 助手', '月之暗面', 'kimi', '360', '周鸿祎', 'openai', 'anthropic', 'gemini', 'claude', '人工智能']):
+    # AI 与大模型（优先级最高）
+    if any(kw in text for kw in ['大模型', 'llm', 'gpt', 'ai agent', '智能体', 'ai 助手', '月之暗面', 'kimi', '360', '周鸿祎', 'openai', 'anthropic', 'gemini', 'claude', '人工智能', 'ai 相机', 'ai ']):
         return "🤖 AI 与大模型"
-    elif any(kw in text for kw in ['机器人', 'robot', '人形', '自动驾驶', '特斯拉 fsd', '无人驾驶']):
-        return "🤖 机器人与自动驾驶"
-    elif any(kw in text for kw in ['手机', '芯片', '半导体', 'oppo', 'vivo', '小米', '华为', '苹果', '消费电子', '骁龙', '麒麟']):
-        return "📱 硬件与消费电子"
-    elif any(kw in text for kw in ['融资', '投资', '上市', 'ipo', '估值', '创业', '捐赠', '并购', '收购']):
+    
+    # 创投动态（包含融资、上市等）
+    elif any(kw in text for kw in ['融资', '投资', '上市', 'ipo', '估值', '创业', '捐赠', '并购', '收购', '授予', '股票期权']):
         return "💰 创投动态"
+    
+    # 硬件与消费电子
+    elif any(kw in text for kw in ['手机', '芯片', '半导体', 'oppo', 'vivo', '小米', '华为', '苹果', '消费电子', '骁龙', '麒麟', 'meta']):
+        return "📱 硬件与消费电子"
+    
+    # 机器人与自动驾驶
+    elif any(kw in text for kw in ['机器人', 'robot', '人形', '自动驾驶', '特斯拉 fsd', '无人驾驶', '具身']):
+        return "🤖 机器人与自动驾驶"
+    
+    # 智能汽车
     elif any(kw in text for kw in ['汽车', '新能源', '特斯拉', '比亚迪', 'f1', '赛车', '蔚来', '小鹏', '理想']):
         return "🚗 智能汽车"
-    elif any(kw in text for kw in ['医疗', '健康', '生物', '制药', '基因']):
-        return "🏥 医疗科技"
-    elif any(kw in text for kw in ['金融', '支付', '银行', '保险', '区块链', '比特币', '加密货币']):
+    
+    # 金融科技（包含股市、黄金等）
+    elif any(kw in text for kw in ['金融', '支付', '银行', '保险', '区块链', '比特币', '加密货币', '黄金', '沪指', '深成指', '涨', '跌']):
         return "💳 金融科技"
+    
+    # 互联网与平台
+    elif any(kw in text for kw in ['闲鱼', '平台', '互联网', 'app', '上线', '用户', '活跃']):
+        return "🌐 互联网"
+    
+    # 科技与安全
     elif any(kw in text for kw in ['安全', '隐私', '黑客', '漏洞', '数据泄露', '监管', '反垄断']):
         return "🛡️ 科技与安全"
+    
+    # 医疗科技
+    elif any(kw in text for kw in ['医疗', '健康', '生物', '制药', '基因']):
+        return "🏥 医疗科技"
+    
+    # 默认：科技前沿
     else:
         return "🌐 科技前沿"
 
@@ -440,8 +461,8 @@ def generate_report():
     
     print(f"📊 总计抓取：{len(all_news)} 条")
     
-    # 按来源分配名额（确保多样性）
-    source_quota = {"36Kr 快讯": 6, "36Kr": 5, "虎嗅": 5, "机器之心": 4, "量子位": 4}
+    # 按来源分配名额（确保多样性，增加配额）
+    source_quota = {"36Kr 快讯": 10, "36Kr": 8, "虎嗅": 8, "机器之心": 6, "量子位": 6}
     source_counts = {}
     filtered_news = []
     
@@ -483,10 +504,11 @@ _每日热点精选 · 把握科技脉搏 · 综合多家来源_
 
 """
     
-    # 按分类输出
+    # 按分类输出（增加每个分类的输出数量）
     for cat_name, items in sorted(categories.items(), key=lambda x: len(x[1]), reverse=True):
         report += f"\n### {cat_name}\n\n"
-        for i, item in enumerate(items[:5], 1):
+        # 每个分类最多输出 8 条（原来是 5 条）
+        for i, item in enumerate(items[:8], 1):
             report += format_news_item(item, i) + "\n\n"
     
     # 结尾
