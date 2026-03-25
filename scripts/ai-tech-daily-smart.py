@@ -250,40 +250,41 @@ def fetch_jiqizhixin():
         if content:
             lines = content.split('\n')
             
-            # 匹配格式：标题 + 日期行
+            # 匹配格式：标题 + 日期行（03 月 24 日）
             for i, line in enumerate(lines):
                 line = line.strip()
                 
-                # 查找日期行（03 月 24 日 格式）
-                if re.match(r'\d{2}月\d{2}日', line):
-                    # 检查是否为当天或昨天
-                    if '03 月 25 日' in line or '03 月 24 日' in line:  # 今天或昨天
-                        # 查找上一行的标题和链接
-                        if i > 0:
-                            prev_line = lines[i - 1].strip()
-                            # 匹配文章链接
-                            matches = re.findall(r'\[([^\]]+)\]\((https?://www\.jiqizhixin\.com/[^\)]+)\)', prev_line)
-                            
-                            for title, url in matches:
-                                title = title.strip()
-                                
-                                # 过滤条件
-                                if len(title) <= 5 or len(title) >= 100:
-                                    continue
-                                if is_own_product(title, '机器之心'):
-                                    continue
-                                if any(kw in title for kw in FILTER_KEYWORDS):
-                                    continue
-                                
-                                category = categorize_news(title)
-                                news_items.append({
-                                    "category": category,
-                                    "title": title,
-                                    "desc": "",
-                                    "url": url,
-                                    "source": "机器之心",
-                                    "hours_ago": 1
-                                })
+                # 查找文章标题（包含链接）
+                if 'jiqizhixin.com/' in line and line.startswith('['):
+                    # 检查下一行是否为日期
+                    if i + 1 < len(lines):
+                        next_line = lines[i + 1].strip()
+                        # 检查是否为当天日期（03 月 25 日或 03 月 24 日）
+                        if re.match(r'\d{2}月\d{2}日', next_line):
+                            if '03 月 25 日' in next_line or '03 月 24 日' in next_line:
+                                # 匹配文章链接
+                                match = re.match(r'\[([^\]]+)\]\((https?://www\.jiqizhixin\.com/[^\)]+)\)', line)
+                                if match:
+                                    title = match.group(1).strip()
+                                    url = match.group(2)
+                                    
+                                    # 过滤条件
+                                    if len(title) <= 5 or len(title) >= 100:
+                                        continue
+                                    if is_own_product(title, '机器之心'):
+                                        continue
+                                    if any(kw in title for kw in FILTER_KEYWORDS):
+                                        continue
+                                    
+                                    category = categorize_news(title)
+                                    news_items.append({
+                                        "category": category,
+                                        "title": title,
+                                        "desc": "",
+                                        "url": url,
+                                        "source": "机器之心",
+                                        "hours_ago": 1
+                                    })
             
             print(f"✅ 机器之心 抓取成功：{len(news_items)} 条")
             
@@ -302,21 +303,23 @@ def fetch_qbitai():
         if content:
             lines = content.split('\n')
             
-            # 匹配格式：### 标题
+            # 匹配格式：### 标题 + ([](URL))
             for i, line in enumerate(lines):
                 line = line.strip()
                 
-                # 查找文章标题（### 开头）
-                if line.startswith('### ') and len(line) > 10:
+                # 查找文章标题（### 开头，且不是"热门文章"）
+                if line.startswith('### ') and len(line) > 10 and '热门' not in line:
                     title = line[4:].strip()
                     
                     # 查找下一行的链接
                     if i + 1 < len(lines):
                         next_line = lines[i + 1].strip()
-                        if 'qbitai.com/' in next_line:
-                            match = re.search(r'\((https?://www\.qbitai\.com/\d{4}/\d{2}/\d{2}/\d+\.html)\)', next_line)
-                            if match:
-                                url = match.group(1)
+                        # 简单字符串查找提取 URL
+                        if 'qbitai.com/' in next_line and 'http' in next_line:
+                            start = next_line.find('http')
+                            end = next_line.find(')')
+                            if start > 0 and end > start:
+                                url = next_line[start:end]
                                 
                                 # 过滤条件
                                 if len(title) <= 5 or len(title) >= 100:
