@@ -177,28 +177,49 @@ def parse_qbitai_content(markdown_content):
     
     return news_items[:15]
 
-def parse_zhihu_hot_content(markdown_content):
-    """解析知乎热榜内容"""
+def fetch_zhihu_hot_api():
+    """通过知乎 API 获取热榜（无需 Lightpanda）"""
+    import urllib.request
+    import json
+    
     news_items = []
+    url = "https://www.zhihu.com/api/v3/feed/topstory/hot?limit=50"
     
-    pattern = r'\[([^\]]+)\]\((https?://www\.zhihu\.com/question/\d+)\)'
-    matches = re.findall(pattern, markdown_content)
-    
-    for title, url in matches:
-        title = title.strip()
-        if 5 < len(title) < 100 and '广告' not in title and '盐选' not in title:
-            category = categorize_news(title)
-            news_items.append({
-                "category": category,
-                "title": title,
-                "desc": "",
-                "url": url,
-                "source": "知乎热榜",
-                "hours_ago": 1,
-                "interest_score": USER_INTERESTS.get(category, 1.0)
-            })
-    
-    return news_items[:15]
+    try:
+        req = urllib.request.Request(
+            url,
+            headers={
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                'Accept': 'application/json'
+            }
+        )
+        with urllib.request.urlopen(req, timeout=15) as response:
+            data = json.loads(response.read().decode('utf-8'))
+        
+        for item in data.get('data', []):
+            target = item.get('target', {})
+            question = target.get('question', {})
+            title = question.get('title', '')
+            question_id = question.get('id', '')
+            
+            if title and 5 < len(title) < 100 and '广告' not in title:
+                category = categorize_news(title)
+                news_items.append({
+                    "category": category,
+                    "title": title,
+                    "desc": "",
+                    "url": f"https://www.zhihu.com/question/{question_id}",
+                    "source": "知乎热榜",
+                    "hours_ago": 0,
+                    "interest_score": USER_INTERESTS.get(category, 1.0) * 1.1  # 知乎热榜权重略高
+                })
+        
+        print(f"✅ 知乎热榜 抓取成功：{len(news_items)} 条")
+        return news_items[:20]
+        
+    except Exception as e:
+        print(f"❌ 知乎热榜 API 失败：{e}")
+        return []
 
 # 网易科技解析函数已移除（2026-03-25）
 
@@ -258,12 +279,8 @@ def fetch_qbitai():
     return items
 
 def fetch_zhihu_hot():
-    """抓取知乎热榜"""
-    print("🐼 使用 Lightpanda 抓取知乎热榜...")
-    content = fetch_with_lightpanda("https://www.zhihu.com/hot")
-    items = parse_zhihu_hot_content(content)
-    print(f"✅ 知乎热榜 抓取成功：{len(items)} 条")
-    return items
+    """抓取知乎热榜（使用 API）"""
+    return fetch_zhihu_hot_api()
 
 # 网易科技已移除（2026-03-25）
 
