@@ -200,28 +200,7 @@ def parse_jiqizhixin_content(markdown_content):
     
     return news_items[:15]
 
-def parse_netease_content(markdown_content):
-    """解析网易科技内容"""
-    news_items = []
-    
-    pattern = r'\[([^\]]+)\]\((https?://[^)]+\.163\.com/[^)]+)\)'
-    matches = re.findall(pattern, markdown_content)
-    
-    for title, url in matches:
-        title = title.strip()
-        if 5 < len(title) < 100 and '广告' not in title:
-            category = categorize_news(title)
-            news_items.append({
-                "category": category,
-                "title": title,
-                "desc": "",
-                "url": url,
-                "source": "网易科技",
-                "hours_ago": 2,
-                "interest_score": USER_INTERESTS.get(category, 1.0)
-            })
-    
-    return news_items[:15]
+# 网易科技解析函数已移除（2026-03-25）
 
 def categorize_news(title):
     """根据关键词自动分类新闻"""
@@ -286,13 +265,7 @@ def fetch_jiqizhixin():
     print(f"✅ 机器之心 抓取成功：{len(items)} 条")
     return items
 
-def fetch_netease_tech():
-    """抓取网易科技"""
-    print("🐼 使用 Lightpanda 抓取网易科技...")
-    content = fetch_with_lightpanda("https://tech.163.com/")
-    items = parse_netease_content(content)
-    print(f"✅ 网易科技 抓取成功：{len(items)} 条")
-    return items
+# 网易科技已移除（2026-03-25）
 
 def generate_report():
     """生成完整日报（带个性化排序）"""
@@ -305,7 +278,7 @@ def generate_report():
     all_news.extend(fetch_huxiu())
     all_news.extend(fetch_qbitai())
     all_news.extend(fetch_jiqizhixin())
-    all_news.extend(fetch_netease_tech())
+    # 网易科技已移除（2026-03-25）
     
     print(f"📊 总计抓取：{len(all_news)} 条")
     
