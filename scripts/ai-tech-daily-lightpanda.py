@@ -181,9 +181,10 @@ def fetch_zhihu_hot_api():
     """通过知乎 API 获取热榜（无需 Lightpanda）"""
     import urllib.request
     import json
+    from datetime import datetime
     
     news_items = []
-    url = "https://www.zhihu.com/api/v3/feed/topstory/hot?limit=50"
+    url = "https://www.zhihu.com/api/v3/feed/topstory/hot?limit=10"  # 只请求前 10 条
     
     try:
         req = urllib.request.Request(
@@ -196,26 +197,37 @@ def fetch_zhihu_hot_api():
         with urllib.request.urlopen(req, timeout=15) as response:
             data = json.loads(response.read().decode('utf-8'))
         
-        for item in data.get('data', []):
+        for idx, item in enumerate(data.get('data', []), 1):
             target = item.get('target', {})
             question = target.get('question', {})
             title = question.get('title', '')
             question_id = question.get('id', '')
+            created_time = question.get('created', 0)
             
             if title and 5 < len(title) < 100 and '广告' not in title:
                 category = categorize_news(title)
+                question_time = datetime.fromtimestamp(created_time) if created_time else datetime.now()
+                hours_ago = int((datetime.now() - question_time).total_seconds() / 3600)
+                
+                # 时效性标记：超过 7 天的标记为较旧内容
+                if hours_ago > 168:  # 7 天
+                    hours_ago_display = f"{hours_ago // 24}天前"
+                else:
+                    hours_ago_display = f"{hours_ago}小时前"
+                
                 news_items.append({
                     "category": category,
                     "title": title,
                     "desc": "",
                     "url": f"https://www.zhihu.com/question/{question_id}",
-                    "source": "知乎热榜",
-                    "hours_ago": 0,
-                    "interest_score": USER_INTERESTS.get(category, 1.0) * 1.1  # 知乎热榜权重略高
+                    "source": f"知乎热榜 #{idx}",
+                    "hours_ago": hours_ago,
+                    "interest_score": USER_INTERESTS.get(category, 1.0) * 1.1 * (1.0 - idx * 0.05),  # 排名越高权重越高
+                    "rank": idx
                 })
         
-        print(f"✅ 知乎热榜 抓取成功：{len(news_items)} 条")
-        return news_items[:20]
+        print(f"✅ 知乎热榜 抓取成功：{len(news_items)} 条（Top 10）")
+        return news_items
         
     except Exception as e:
         print(f"❌ 知乎热榜 API 失败：{e}")
