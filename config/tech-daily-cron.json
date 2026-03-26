@@ -1,6 +1,6 @@
 {
   "name": "AI 科技日报",
-  "description": "每日上午 9 点自动抓取科技新闻并推送到飞书（2026-03-25 更新：删除网易科技，优化过滤规则）",
+  "description": "每日上午 9 点自动抓取科技新闻并推送到飞书（2026-03-26 更新：机器之心替换为知乎热榜）",
   "schedule": {
     "kind": "cron",
     "expr": "0 9 * * *",
@@ -16,8 +16,8 @@
       "rss": "https://rsshub.app/huxiu/article"
     },
     {
-      "name": "机器之心",
-      "rss": "https://rsshub.app/jiqizhixin/article"
+      "name": "知乎热榜",
+      "rss": "https://rsshub.app/zhihu/hotlist"
     },
     {
       "name": "量子位",

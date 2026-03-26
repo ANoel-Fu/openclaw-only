@@ -177,24 +177,24 @@ def parse_qbitai_content(markdown_content):
     
     return news_items[:15]
 
-def parse_jiqizhixin_content(markdown_content):
-    """解析机器之心内容"""
+def parse_zhihu_hot_content(markdown_content):
+    """解析知乎热榜内容"""
     news_items = []
     
-    pattern = r'\[([^\]]+)\]\((https?://www\.jiqizhixin\.com/[^)]+)\)'
+    pattern = r'\[([^\]]+)\]\((https?://www\.zhihu\.com/question/\d+)\)'
     matches = re.findall(pattern, markdown_content)
     
     for title, url in matches:
         title = title.strip()
-        if 5 < len(title) < 100 and '会员' not in title and '广告' not in title:
+        if 5 < len(title) < 100 and '广告' not in title and '盐选' not in title:
             category = categorize_news(title)
             news_items.append({
                 "category": category,
                 "title": title,
                 "desc": "",
                 "url": url,
-                "source": "机器之心",
-                "hours_ago": 3,
+                "source": "知乎热榜",
+                "hours_ago": 1,
                 "interest_score": USER_INTERESTS.get(category, 1.0)
             })
     
@@ -257,12 +257,12 @@ def fetch_qbitai():
     print(f"✅ 量子位 抓取成功：{len(items)} 条")
     return items
 
-def fetch_jiqizhixin():
-    """抓取机器之心"""
-    print("🐼 使用 Lightpanda 抓取机器之心...")
-    content = fetch_with_lightpanda("https://www.jiqizhixin.com/")
-    items = parse_jiqizhixin_content(content)
-    print(f"✅ 机器之心 抓取成功：{len(items)} 条")
+def fetch_zhihu_hot():
+    """抓取知乎热榜"""
+    print("🐼 使用 Lightpanda 抓取知乎热榜...")
+    content = fetch_with_lightpanda("https://www.zhihu.com/hot")
+    items = parse_zhihu_hot_content(content)
+    print(f"✅ 知乎热榜 抓取成功：{len(items)} 条")
     return items
 
 # 网易科技已移除（2026-03-25）
@@ -277,7 +277,7 @@ def generate_report():
     all_news.extend(fetch_36kr_newsflashes())
     all_news.extend(fetch_huxiu())
     all_news.extend(fetch_qbitai())
-    all_news.extend(fetch_jiqizhixin())
+    all_news.extend(fetch_zhihu_hot())  # 知乎热榜替换机器之心（2026-03-26）
     # 网易科技已移除（2026-03-25）
     
     print(f"📊 总计抓取：{len(all_news)} 条")
